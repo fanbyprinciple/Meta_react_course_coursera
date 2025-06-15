@@ -44,7 +44,7 @@ const AuthScreen = () => {
       });
       if (auth.success) {
         await signIn();
-        router.replace('/');
+        router.replace('/home');
       } else {
         setError('Authentication failed. Please try again.');
       }
@@ -65,19 +65,19 @@ const AuthScreen = () => {
             Welcome to Rememo
             </Text>
             <Text style={styles.subtitle}>
-              Your reminder app.
+              Originally made for Devu but you can use it too.
             </Text>
 
         </View>
         <View style={styles.card}>
             <Text style={styles.textContainer}>
-              Please authenticate to continue
+              Please click button below to continue
             </Text>
             <TouchableOpacity style={[styles.button, isAuthenticating && styles.buttonDisabled]} disabled= {isAuthenticating} onPress={authenticate}> 
                 <Ionicons style={styles.buttonIcon} name={hasBiometrics? 'finger-print-outline' : 'keypad-outline'} size={24} color="white" />
                 <Text style={styles.buttonText}>
                   {hasBiometrics
-                    ? 'Use face/ Touch ID or PIN'
+                    ? 'Use Face/ Touch ID or PIN'
                     : 'Enter your PIN'}
                 </Text> 
                 <Text style={styles.buttonText}>
