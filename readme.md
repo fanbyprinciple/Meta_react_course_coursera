@@ -34,3 +34,11 @@ npm run reset-project
 # post module one submission you are hit by a paywall
 
 ![](2025-06-14-17-32-04.png)
+
+# let me try and make another app altogether
+
+https://www.youtube.com/watch?v=fcpZeYeINDw&t=18880s
+
+## trying to get the early design and auth page
+
+![](2025-06-15-18-15-00.png)
