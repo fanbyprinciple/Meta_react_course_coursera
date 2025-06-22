@@ -1,225 +1,212 @@
-import React from 'react';
-import {useState, useEffect } from 'react';
-import { useRouter } from 'expo-router';
-import  useAuth  from '../hooks/useAuth';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { Ionicons } from '@expo/vector-icons';
-import {LinearGradient} from 'expo-linear-gradient';
+import { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Image,
+} from "react-native";
+import { useRouter } from "expo-router";
+import * as LocalAuthentication from "expo-local-authentication";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
-const AuthScreen = () => {
-  const [hasBiometrics, setHasBiometrics] = useState(false);
+export default function AuthScreen() {
+  const router = useRouter();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const { signIn, signOut } = useAuth();
-
-  const checkBiometrics  = async () => {
-    const compatible = await LocalAuthentication.hasHardwareAsync();
-    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-    if (compatible && isEnrolled) {
-      setHasBiometrics(compatible);
-    }
-  };
+  const [hasBiometrics, setHasBiometrics] = useState(false);
 
   useEffect(() => {
     checkBiometrics();
   }, []);
 
+  const checkBiometrics = async () => {
+    const hasHardware = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+    setHasBiometrics(hasHardware && isEnrolled);
+  };
+
   const authenticate = async () => {
-    setIsAuthenticating(true);
-    setError(null);
     try {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-      const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      
+      setIsAuthenticating(true);
+      setError(null);
+
+      // Check if device has biometric hardware
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const supportedTypes =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      const hasBiometrics = await LocalAuthentication.isEnrolledAsync();
+
       const auth = await LocalAuthentication.authenticateAsync({
-        promptMessage: compatible && isEnrolled ? 'Use Face ID/ Touch ID' : 'Enter your PIN',
-        fallbackLabel: 'Enter your PIN',
-        cancelLabel: 'Cancel',
+        promptMessage:
+          hasHardware && hasBiometrics
+            ? "Use Face ID or Touch ID"
+            : "Enter your PIN to access Rememo",
+        fallbackLabel: "Use PIN",
+        cancelLabel: "Cancel",
         disableDeviceFallback: false,
       });
+
       if (auth.success) {
-        await signIn();
-        router.replace('/home');
+        router.replace("/home");
       } else {
-        setError('Authentication failed. Please try again.');
+        setError("Authentication failed. Please try again.");
       }
     } catch (err) {
-      setError('An error occurred during authentication.');
+      setError("An error occurred. Please try again.");
+      console.error(err);
     } finally {
       setIsAuthenticating(false);
     }
-  }
+  };
+
   return (
-    <LinearGradient colors={["#000000", "#050a30"]} style={styles.container}>
-      <View style={styles.viewContainer}>
+    <LinearGradient colors={["#4CAF50", "#2E7D32"]} style={styles.container}>
+      <View style={styles.content}>
         <View style={styles.iconContainer}>
-            <View style={styles.iconCircle}>
-            <Ionicons name="receipt-outline" size={80} color="white" />
-            </View>
-            <Text style={styles.title}  >
-            Welcome to Rememo
-            </Text>
-            <Text style={styles.subtitle}>
-              Originally made for Devu but you can use it too.
-            </Text>
-
+          <Ionicons name="hourglass" size={80} color="white" />
         </View>
-        <View style={styles.card}>
-            <Text style={styles.textContainer}>
-              Please click button below to continue
-            </Text>
-            <TouchableOpacity style={[styles.button, isAuthenticating && styles.buttonDisabled]} disabled= {isAuthenticating} onPress={authenticate}> 
-                <Ionicons style={styles.buttonIcon} name={hasBiometrics? 'finger-print-outline' : 'keypad-outline'} size={24} color="white" />
-                <Text style={styles.buttonText}>
-                  {hasBiometrics
-                    ? 'Use Face/ Touch ID or PIN'
-                    : 'Enter your PIN'}
-                </Text> 
-                <Text style={styles.buttonText}>
-                {isAuthenticating ? 'Authenticating...' : hasBiometrics
-                ? ''
-                : ''}
-                </Text>
-            </TouchableOpacity>
 
-            {error && 
+        <Text style={styles.title}>Rememo</Text>
+        <Text style={styles.subtitle}>Originally made for Devu but you can use too.</Text>
+
+        <View style={styles.card}>
+          <Text style={styles.welcomeText}>Welcome Back!</Text>
+          <Text style={styles.instructionText}>
+            {hasBiometrics
+              ? "Use Face ID/Touch ID or PIN to access your tasks"
+              : "Enter your PIN to access your tasks"}
+          </Text>
+
+          <TouchableOpacity
+            style={[styles.button, isAuthenticating && styles.buttonDisabled]}
+            onPress={authenticate}
+            disabled={isAuthenticating}
+          >
+            <Ionicons
+              name={hasBiometrics ? "finger-print-outline" : "keypad-outline"}
+              size={24}
+              color="white"
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.buttonText}>
+              {isAuthenticating
+                ? "Verifying..."
+                : hasBiometrics
+                ? "Authenticate"
+                : "Enter PIN"}
+            </Text>
+          </TouchableOpacity>
+
+          {error && (
             <View style={styles.errorContainer}>
-                <Ionicons name="warning-outline" size={24} color="red" />
-                <Text style={styles.errorText}>{error}</Text>
-            </View>}
+              <Ionicons name="alert-circle" size={20} color="#f44336" />
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
         </View>
       </View>
     </LinearGradient>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    padding: 100,
   },
-  viewContainer:{
+  content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: width * 0.9,
-   
-  },
-
-  iconContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-    justifyContent: 'center',
-    borderRadius: 60,  
     padding: 20,
-
+    justifyContent: "center",
+    alignItems: "center",
   },
-  textContainer: {
-    alignItems: 'center',
-    color: 'white',
-    fontSize: 16,
-    padding: 5,
+  iconContainer: {
+    width: 120,
+    height: 120,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
   },
-errorText: {
-        color: 'red',
-        marginTop: 10,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 10,
-        textShadowColor: "rgba(0, 0, 0, 0.2)",
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 3,
-    },
-    subtitle: {
-        fontSize: 18,
-        color: "rgba(255,255,255,0.9)", 
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    card: {
-      backgroundColor: 'rgba(2, 35, 142, 0.6)',
-      borderRadius: 20,
-      padding: 30,
-      width: width -50,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
-      textAlign: 'center',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },  
-   iconCircle: {
-    width: 120,    // Set a fixed width
-    height: 120,    // Set a fixed height (must be same as width for a perfect circle)
-      // Half of the width/height to make it a circle
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',  // Center the icon horizontally
-    alignItems: 'center',      // Center the icon vertically
-    // You can add more styling here, e.g., borderWidth, borderColor, shadow, etc.
-    shadowColor: '#fff',
+  title: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "white",
+    marginBottom: 10,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: "rgba(255, 255, 255, 0.9)",
+    marginBottom: 40,
+    textAlign: "center",
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 30,
+    width: width - 40,
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
-      width: 2,
+      width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
+    shadowRadius: 3.84,
     elevation: 5,
-    padding: 10,
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 10,
+  },
+  instructionText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
     marginBottom: 30,
   },
   button: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-    width: '100%',
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    color: 'black',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,   
-    shadowRadius: 3.84,
-    elevation: 5, 
+    backgroundColor: "#4CAF50",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 12,
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  buttonText: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(255, 0, 0, 0.1)',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-    width: '100%',
-    alignItems: 'center',
-  }, 
   buttonDisabled: {
-    opacity: 0.5,
+    opacity: 0.7,
   },
-
   buttonIcon: {
     marginRight: 10,
-    color: 'black',
   },
-
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#ffebee",
+    borderRadius: 8,
+  },
+  errorText: {
+    color: "#f44336",
+    marginLeft: 8,
+    fontSize: 14,
+  },
 });
-
-export default AuthScreen;

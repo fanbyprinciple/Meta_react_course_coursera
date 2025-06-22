@@ -1,0 +1,1 @@
+export type Route = "tasks/add" | "calendar" | "history" | "trackers";
