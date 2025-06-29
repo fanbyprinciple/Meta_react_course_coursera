@@ -4,7 +4,6 @@
     "slug": "rememo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "projectId": "ayana_rememo",
     "scheme": "rememo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

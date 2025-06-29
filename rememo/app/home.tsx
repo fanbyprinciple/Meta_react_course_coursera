@@ -1,32 +1,32 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Dimensions,
-  Animated,
-  Modal,
-  Alert,
-  AppState,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import Svg, { Circle } from "react-native-svg";
-import {
-  gettasks,
-  task,
-  getTodaysItems,
-  recordEffort,
-  EffortHistory,
-} from "../utils/storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Link, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  Animated,
+  AppState,
+  Dimensions,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Svg, { Circle } from "react-native-svg";
 import {
   registerForPushNotificationsAsync,
   scheduletaskReminder,
 } from "../utils/notifications";
+import {
+  EffortHistory,
+  gettasks,
+  getTodaysItems,
+  recordEffort,
+  task,
+} from "../utils/storage";
 
 const { width } = Dimensions.get("window");
 
@@ -39,7 +39,7 @@ const QUICK_ACTIONS = [
     label: "Add\ntask",
     route: "/tasks/add" as const,
     color: "#2E7D32",
-    gradient: ["#4CAF50", "#2E7D32"] as [string, string],
+    gradient: ["#2C3E50 ", "#3498DB"] as [string, string],
   },
   {
     icon: "calendar-outline" as const,
@@ -78,7 +78,7 @@ function CircularProgress({
   const animatedValue = useRef(new Animated.Value(0)).current;
   const size = width * 0.55;
   const strokeWidth = 15;
-  const radius = (size - strokeWidth) / 2;
+  const radius = (size - strokeWidth) /2;
   const circumference = 2 * Math.PI * radius;
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function CircularProgress({
       duration: 1500,
       useNativeDriver: true,
     }).start();
-  }, [progress]);
+  }, [progress, animatedValue]);
 
   const strokeDashoffset = animatedValue.interpolate({
     inputRange: [0, 1],
@@ -118,7 +118,7 @@ function CircularProgress({
           cy={size / 2}
           r={radius}
           stroke="white"
-          strokeWidth={strokeWidth}
+          strokeWidth={strokeWidth * 2}
           fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
@@ -131,9 +131,9 @@ function CircularProgress({
 }
 
 export default function HomeScreen() {
-  const router = useRouter();
+ const router = useRouter()
   const [showNotifications, setShowNotifications] = useState(false);
-  const [tasks, settasks] = useState<task[]>([]);
+  const [tasks, settasks] = useState<task[]>([])
   const [todaystasks, setTodaystasks] = useState<task[]>([]);
   const [completedItems, setCompletedItems] = useState(0);
   const [EffortHistory, setEffortHistory] = useState<EffortHistory[]>([]);
@@ -213,7 +213,7 @@ export default function HomeScreen() {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [loadtasks]);
 
   // Use useFocusEffect for subsequent updates
   useFocusEffect(
@@ -305,7 +305,7 @@ export default function HomeScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Today's Schedule</Text>
+            <Text style={styles.sectionTitle}>Today&apos;s Schedule</Text>
             <Link href="/calendar" asChild>
               <TouchableOpacity>
                 <Text style={styles.seeAllButton}>See All</Text>

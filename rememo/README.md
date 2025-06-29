@@ -17,3 +17,7 @@ Accent: #CC9966 (Warm Copper/Muted Orange) - For warmth and contrast
 ![](2025-06-22-18-43-59.png)
 
 Things I dont know , how the layout thing works
+
+eas build -p android --profile preview
+
+eas build -p ios --profile ios-simulator

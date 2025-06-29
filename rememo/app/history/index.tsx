@@ -69,12 +69,7 @@ export default function HistoryScreen() {
     );
   };
 
-  const filteredHistory = history.filter((Effort) => {
-    if (selectedFilter === "all") return true;
-    if (selectedFilter === "Completed") return Effort.Completed;
-    if (selectedFilter === "missed") return !Effort.Completed;
-    return true;
-  });
+  
 
   const groupedHistory = groupHistoryByDate();
 

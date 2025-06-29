@@ -6,13 +6,11 @@ const Effort_HISTORY_KEY = "@Effort_history";
 export interface task {
   id: string;
   name: string;
-  manhour: string;
   times: string[];
   startDate: string;
-  duration: string;
   color: string;
   reminderEnabled: boolean;
-  currentSupply: number;
+  completed: boolean;
 }
 
 export interface EffortHistory {
@@ -22,6 +20,13 @@ export interface EffortHistory {
   Completed: boolean;
 }
 
+// // exports import {
+//   gettasks,
+//   task,
+//   getTodaysItems,
+//   recordEffort,
+//   EffortHistory,
+// } from "../utils/storage";
 export async function gettasks(): Promise<task[]> {
   try {
     const data = await AsyncStorage.getItem(taskS_KEY);

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
-  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -37,8 +36,7 @@ export default function AuthScreen() {
 
       // Check if device has biometric hardware
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
-      const supportedTypes =
-        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      await LocalAuthentication.supportedAuthenticationTypesAsync();
       const hasBiometrics = await LocalAuthentication.isEnrolledAsync();
 
       const auth = await LocalAuthentication.authenticateAsync({

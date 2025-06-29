@@ -38,7 +38,7 @@ export default function CalendarScreen() {
     } catch (error) {
       console.error("Error loading calendar data:", error);
     }
-  }, [selectedDate]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Platform,
   Alert,
 } from "react-native";
@@ -25,7 +24,7 @@ type EnrichedEffortHistory = EffortHistory & { task?: task };
 export default function HistoryScreen() {
   const router = useRouter();
   const [history, setHistory] = useState<EnrichedEffortHistory[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<
+  useState<
     "all" | "Completed" | "missed"
   >("all");
 
@@ -69,41 +68,7 @@ export default function HistoryScreen() {
     );
   };
 
-  const filteredHistory = history.filter((Effort) => {
-    if (selectedFilter === "all") return true;
-    if (selectedFilter === "Completed") return Effort.Completed;
-    if (selectedFilter === "missed") return !Effort.Completed;
-    return true;
-  });
-
-  const groupedHistory = groupHistoryByDate();
-
-  const handleClearAllData = () => {
-    Alert.alert(
-      "Clear All Data",
-      "Are you sure you want to clear all task data? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Clear All",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await clearAllData();
-              await loadHistory();
-              Alert.alert("Success", "All data has been cleared successfully");
-            } catch (error) {
-              console.error("Error clearing data:", error);
-              Alert.alert("Error", "Failed to clear data. Please try again.");
-            }
-          },
-        },
-      ]
-    );
-  };
+  
 
   return (
     <View style={styles.container}>

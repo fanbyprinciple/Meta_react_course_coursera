@@ -7,6 +7,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -85,31 +87,6 @@ export async function scheduletaskReminder(
   }
 }
 
-export async function scheduleEnergyReminder(
-  task: task
-): Promise<string | undefined> {
-  if (!task.EnergyReminder) return;
-
-  try {
-    // Schedule a notification when supply is low
-    if (task.currentSupply <= task.EnergyAt) {
-      const identifier = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Energy Reminder",
-          body: `Your ${task.name} supply is running low. Current supply: ${task.currentSupply}`,
-          data: { taskId: task.id, type: "Energy" },
-        },
-        trigger: null, // Show immediately
-      });
-
-      return identifier;
-    }
-  } catch (error) {
-    console.error("Error scheduling Energy reminder:", error);
-    return undefined;
-  }
-}
-
 export async function canceltaskReminders(
   taskId: string
 ): Promise<void> {
@@ -141,7 +118,7 @@ export async function updatetaskReminders(
 
     // Schedule new reminders
     await scheduletaskReminder(task);
-    await scheduleEnergyReminder(task);
+
   } catch (error) {
     console.error("Error updating task reminders:", error);
   }

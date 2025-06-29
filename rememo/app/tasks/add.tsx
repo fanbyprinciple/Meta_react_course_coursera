@@ -1,69 +1,47 @@
-import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-  Dimensions,
-  Platform,
-  KeyboardAvoidingView,
-  Alert,
-} from "react-native";
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
-import { BlurView } from "expo-blur";
-import { addtask } from "../../utils/storage";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  scheduletaskReminder,
-  scheduleEnergyReminder,
-} from "../../utils/notifications";
+  Alert,
+  Dimensions,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { scheduletaskReminder } from "../../utils/notifications";
+import { addtask } from "../../utils/storage";
 
 const { width } = Dimensions.get("window");
 
-const FREQUENCIES = [
-  {
-    id: "1",
-    label: "Once daily",
-    icon: "sunny-outline" as const,
-    times: ["23:00"],
-  },
-
-  { id: "5", label: "As needed", icon: "calendar-outline" as const, times: [] },
-];
-
-const DURATIONS = [
-  { id: "1", label: "7 days", value: 7 },
-  { id: "2", label: "14 days", value: 14 },
-  { id: "3", label: "30 days", value: 30 },
-  { id: "4", label: "90 days", value: 90 },
-  { id: "5", label: "Ongoing", value: -1 },
-];
 
 export default function AddtaskScreen() {
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
-    frequency: "",
-    duration: "",
     startDate: new Date(),
-    times: ["09:00"],
+    times: [
+      new Date(Date.now() + 60 * 1000).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+    ],
     notes: "",
+    type:"",
     reminderEnabled: true,
-    EnergyReminder: false,
-    currentSupply: "",
-    EnergyAt: "",
+    completed:false,
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedFrequency, setSelectedFrequency] = useState("");
-  const [selectedDuration, setSelectedDuration] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
@@ -73,13 +51,13 @@ export default function AddtaskScreen() {
       newErrors.name = "Task name is required";
     }
 
-    if (!form.frequency) {
-      newErrors.frequency = "Frequency is required";
-    }
+    // if (!form.frequency) {
+    //   newErrors.frequency = "Frequency is required";
+    // }
 
-    if (!form.duration) {
-      newErrors.duration = "Duration is required";
-    }
+    // if (!form.duration) {
+    //   newErrors.duration = "Duration is required";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -104,7 +82,6 @@ export default function AddtaskScreen() {
         ...form,
         startDate: form.startDate.toISOString(),
         color: randomColor,
-        manhour: "", // Add a default or user-provided value for manhour
       };
 
       await addtask(taskData);
@@ -137,105 +114,7 @@ export default function AddtaskScreen() {
       setIsSubmitting(false);
     }
   };
-
-  const handleFrequencySelect = (freq: string) => {
-    setSelectedFrequency(freq);
-    const selectedFreq = FREQUENCIES.find((f) => f.label === freq);
-    setForm((prev) => ({
-      ...prev,
-      frequency: freq,
-      times: selectedFreq?.times || [],
-    }));
-    if (errors.frequency) {
-      setErrors((prev) => ({ ...prev, frequency: "" }));
-    }
-  };
-
-  const handleDurationSelect = (dur: string) => {
-    setSelectedDuration(dur);
-    setForm((prev) => ({ ...prev, duration: dur }));
-    if (errors.duration) {
-      setErrors((prev) => ({ ...prev, duration: "" }));
-    }
-  };
-
-  const renderFrequencyOptions = () => {
-    return (
-      <View style={styles.optionsGrid}>
-        {FREQUENCIES.map((freq) => (
-          <TouchableOpacity
-            key={freq.id}
-            style={[
-              styles.optionCard,
-              selectedFrequency === freq.label && styles.selectedOptionCard,
-            ]}
-            onPress={() => {
-              setSelectedFrequency(freq.label);
-              setForm({ ...form, frequency: freq.label });
-            }}
-          >
-            <View
-              style={[
-                styles.optionIcon,
-                selectedFrequency === freq.label && styles.selectedOptionIcon,
-              ]}
-            >
-              <Ionicons
-                name={freq.icon}
-                size={24}
-                color={selectedFrequency === freq.label ? "white" : "#666"}
-              />
-            </View>
-            <Text
-              style={[
-                styles.optionLabel,
-                selectedFrequency === freq.label && styles.selectedOptionLabel,
-              ]}
-            >
-              {freq.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
-  };
-
-  const renderDurationOptions = () => {
-    return (
-      <View style={styles.optionsGrid}>
-        {DURATIONS.map((dur) => (
-          <TouchableOpacity
-            key={dur.id}
-            style={[
-              styles.optionCard,
-              selectedDuration === dur.label && styles.selectedOptionCard,
-            ]}
-            onPress={() => {
-              setSelectedDuration(dur.label);
-              setForm({ ...form, duration: dur.label });
-            }}
-          >
-            <Text
-              style={[
-                styles.durationNumber,
-                selectedDuration === dur.label && styles.selectedDurationNumber,
-              ]}
-            >
-              {dur.value > 0 ? dur.value : "∞"}
-            </Text>
-            <Text
-              style={[
-                styles.optionLabel,
-                selectedDuration === dur.label && styles.selectedOptionLabel,
-              ]}
-            >
-              {dur.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
-  };
+ 
 
   return (
     <View style={styles.container}>
@@ -254,7 +133,7 @@ export default function AddtaskScreen() {
           >
             <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>New task</Text>
+          <Text style={styles.headerTitle}>Add Task</Text>
         </View>
 
         <ScrollView
@@ -286,97 +165,7 @@ export default function AddtaskScreen() {
 
           {/* Schedule */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>How often?</Text>
-            {errors.frequency && (
-              <Text style={styles.errorText}>{errors.frequency}</Text>
-            )}
-            {renderFrequencyOptions()}
 
-            <Text style={styles.sectionTitle}>For how long?</Text>
-            {errors.duration && (
-              <Text style={styles.errorText}>{errors.duration}</Text>
-            )}
-            {renderDurationOptions()}
-
-            <TouchableOpacity
-              style={styles.dateButton}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <View style={styles.dateIconContainer}>
-                <Ionicons name="calendar" size={20} color="#1a8e2d" />
-              </View>
-              <Text style={styles.dateButtonText}>
-                Starts {form.startDate.toLocaleDateString()}
-              </Text>
-              <Ionicons name="chevron-forward" size={20} color="#666" />
-            </TouchableOpacity>
-
-            {showDatePicker && (
-              <DateTimePicker
-                value={form.startDate}
-                mode="date"
-                onChange={(event, date) => {
-                  setShowDatePicker(false);
-                  if (date) setForm({ ...form, startDate: date });
-                }}
-              />
-            )}
-
-            {form.frequency && form.frequency !== "As needed" && (
-              <View style={styles.timesContainer}>
-                <Text style={styles.timesTitle}>Task Times</Text>
-                {[new Date(Date.now() + 60 * 1000).toLocaleTimeString("default", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })].map((time, index) => (
-                  <TouchableOpacity
-                  key={index}
-                  style={styles.timeButton}
-                  onPress={() => {
-                    setShowTimePicker(true);
-                  }}
-                  >
-                    <View style={styles.timeIconContainer}>
-                      <Ionicons name="time-outline" size={20} color="#1a8e2d" />
-                    </View>
-                    <Text style={styles.timeButtonText}>{time}</Text>
-                    <Ionicons name="chevron-forward" size={20} color="#666" />
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-
-            {showTimePicker && (
-              <DateTimePicker
-                value={(() => {
-                    const now = new Date(Date.now() + 60 * 1000);
-                    const hours = now.getHours();
-                    const minutes = now.getMinutes();
-                  const date = new Date();
-                  date.setHours(hours, minutes, 0, 0);
-                  return date;
-                })()}
-                mode="time"
-                onChange={(event, date) => {
-                  setShowTimePicker(false);
-                  if (date) {
-                    const newTime = date.toLocaleTimeString("default", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    });
-                    setForm((prev) => ({
-                      ...prev,
-                      times: prev.times.map((t, i) => (i === 0 ? newTime : t)),
-                    }));
-                  }
-                }}
-              />
-            )}
-          </View>
-
-          {/* Reminders */}
           <View style={styles.section}>
             <View style={styles.card}>
               <View style={styles.switchRow}>
@@ -387,7 +176,7 @@ export default function AddtaskScreen() {
                   <View>
                     <Text style={styles.switchLabel}>Reminders</Text>
                     <Text style={styles.switchSubLabel}>
-                      Get notified when it's time to take your task
+                      Get notified when it&apos;s time to take your task
                     </Text>
                   </View>
                 </View>
@@ -402,6 +191,37 @@ export default function AddtaskScreen() {
               </View>
             </View>
           </View>
+            
+           {form.reminderEnabled && <TouchableOpacity
+              style={styles.dateButton}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <View style={styles.dateIconContainer}>
+                <Ionicons name="calendar" size={20} color="#1a8e2d" />
+              </View>
+              <Text style={styles.dateButtonText}>
+                Starts {form.startDate.toLocaleDateString()}
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color="#666" />
+            </TouchableOpacity>
+            }
+            
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={form.startDate}
+                mode="date"
+                onChange={(event, date) => {
+                  setShowDatePicker(false);
+                  if (date) setForm({ ...form, startDate: date });
+                }}
+              />
+            )}
+
+          </View>
+
+          {/* Reminders */}
+          
 
           {/* Notes */}
           <View style={styles.section}>
