@@ -42,3 +42,5 @@ https://www.youtube.com/watch?v=fcpZeYeINDw&t=18880s
 ## trying to get the early design and auth page
 
 ![](2025-06-15-18-15-00.png)
+
+npx expo run:android

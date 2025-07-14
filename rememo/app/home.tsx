@@ -131,7 +131,7 @@ function CircularProgress({
 }
 
 export default function HomeScreen() {
- const router = useRouter()
+  const router = useRouter()
   const [showNotifications, setShowNotifications] = useState(false);
   const [tasks, settasks] = useState<task[]>([])
   const [todaystasks, setTodaystasks] = useState<task[]>([]);
@@ -145,33 +145,36 @@ export default function HomeScreen() {
         getTodaysItems(),
       ]);
 
-      setEffortHistory(todaysItems);
+      // setEffortHistory(todaysItems);
       settasks(alltasks);
 
       // Filter tasks for today
       const today = new Date();
       const todayMeds = alltasks.filter((med: task) => {
-        const startDate = new Date(med.startDate);
-        const durationDays = parseInt(med.duration.split(" ")[0]);
+        // const startDate = new Date(med.startDate);
+        // const durationDays = parseInt(med.duration.split(" ")[0]);
 
-        // For ongoing tasks or if within duration
-        if (
-          durationDays === -1 ||
-          (today >= startDate &&
-            today <=
-              new Date(
-                startDate.getTime() + durationDays * 24 * 60 * 60 * 1000
-              ))
-        ) {
-          return true;
-        }
-        return false;
+        // // For ongoing tasks or if within duration
+        // if (
+        //   durationDays === -1 ||
+        //   (today >= startDate &&
+        //     today <=
+        //       new Date(
+        //         startDate.getTime() + durationDays * 24 * 60 * 60 * 1000
+        //       ))
+        // ) {
+        //   return true;
+        // }
+        // return false;
+        return true; // I want all tasks today and otherwise
       });
 
       setTodaystasks(todayMeds);
 
       // Calculate completed Items
-      const completed = todaysItems.filter((Effort: EffortHistory) => Effort.Completed).length;
+      // const completed = todaysItems.filter((Effort: EffortHistory) => Effort.Completed).length;
+      const completed = alltasks.filter((task: task) => task.completed).length;
+      
       setCompletedItems(completed);
     } catch (error) {
       console.error("Error loading tasks:", error);
