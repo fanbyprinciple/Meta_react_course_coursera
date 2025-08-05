@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "staysafe",
-    "slug": "staysafe",
+    "name": "PrinterManagementApp",
+    "slug": "PrinterManagementApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "staysafe",
+    "scheme": "printermanagementapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

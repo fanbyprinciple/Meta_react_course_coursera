@@ -44,3 +44,11 @@ https://www.youtube.com/watch?v=fcpZeYeINDw&t=18880s
 ![](2025-06-15-18-15-00.png)
 
 npx expo run:android
+
+# Doing the thirty hour course
+
+https://www.youtube.com/watch?v=q3HE1dFiJBI
+
+# only next sj?
+
+https://www.youtube.com/watch?v=8GK8R77Bd7g
