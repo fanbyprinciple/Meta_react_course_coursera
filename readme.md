@@ -52,3 +52,8 @@ https://www.youtube.com/watch?v=q3HE1dFiJBI
 # only next sj?
 
 https://www.youtube.com/watch?v=8GK8R77Bd7g
+
+# To do list
+
+https://www.youtube.com/watch?v=_k5v0KOfNZ0
+
