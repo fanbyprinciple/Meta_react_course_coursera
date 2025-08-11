@@ -5,6 +5,9 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import TaskInput from '@/components/addTask';
+
+
 
 export default function HomeScreen() {
   return (
@@ -20,6 +23,8 @@ export default function HomeScreen() {
         <ThemedText type="title">Todo!</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      <TaskInput />
       
       </ParallaxScrollView>
   );
