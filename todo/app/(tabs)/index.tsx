@@ -42,11 +42,6 @@ const styles = StyleSheet.create({
   },
   reactLogo: {
     flex: 1,
-    height: 400,
-    width: 700,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
   addNotes: {
   }
