@@ -57,3 +57,7 @@ https://www.youtube.com/watch?v=8GK8R77Bd7g
 
 https://www.youtube.com/watch?v=_k5v0KOfNZ0
 
+# Amazon data collector
+
+https://www.notjust.dev/projects/amazon-price-tracker
+
